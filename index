@@ -1,0 +1,176 @@
+---
+title: "ggplot"
+author: "hua zhou"
+date: "July 17, 2017"
+output: 
+  html_document:
+   toc: true
+   toc_float: true
+---
+```{r include = FALSE}
+library(viridis)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#1. Elements of ggplot2
+* Data and Mapping
+* Geometric
+* Scale
+* Statistics
+* Coordinate
+* Layer
+* Facet
+* Theme
+
+#2. Data and Mapping
+
+
+```{r}
+library(ggplot2)
+data(diamonds)
+set.seed(42)
+small <- diamonds[sample(nrow(diamonds), 1000), ]
+head(small)
+summary(small)
+```
+ggplot(data = NULL, mapping = aes(), ..., environment = parent.frame())
+Aesthetic mappings describe how variables in the data are mapped to visual properties (aesthetics) of geoms in the format of aes(x,y,...)
+
+```{r}
+p <- ggplot(data = small, mapping = aes(x = carat, y = price))
+```
+This tells how data was mapped to x and y axis.
+```{r}
+p + geom_point()
+```
+
+This tells what kind of plots you want, here's scatter plot.
+
+Map cut to the shape property of ggplot
+```{r}
+p <- ggplot(data=small, mapping=aes(x=carat, y=price, shape=cut))
+p+geom_point()
+```
+
+Map cut to the shape and diamond's colour to color of ggplot
+```{r}
+p <- ggplot(data=small, mapping=aes(x=carat, y=price, shape=cut, colour=color))
+p+geom_point()
+```
+
+#3. Geometric
+
+Geometric describe what is actually displayed on the plot, e.g. geom_point, geom_histogram, geom_bar, geom_boxplot.
+
+### geom_point
+```{r}
+p <- ggplot(small)
+p+geom_point(aes(x=carat, y=price, shape=cut, colour=color))
+```
+
+###geom_histogram
+```{r}
+ggplot(small)+geom_histogram(aes(x=price),bins=30)
+ggplot(small)+geom_histogram(aes(x=price, fill=cut),bins=30)
+```
+
+We can also do side by side histogram
+```{r}
+ggplot(small)+geom_histogram(aes(x=price, fill=cut), position="dodge")
+```
+
+Also, use position='fill' to plot histogram by relative percentage.
+
+```{r}
+ggplot(small)+geom_histogram(aes(x=price, fill=cut), position="fill")
+```
+
+###geom_bar
+
+```{r}
+ggplot(small)+geom_bar(aes(x=clarity))
+```
+
+###geom_density
+
+
+```{r}
+ggplot(small)+geom_density(aes(x=price, colour=cut))
+ggplot(small)+geom_density(aes(x=price, fill=clarity))
+```
+
+###geom_boxplot
+
+```{r}
+ggplot(small)+geom_boxplot(aes(x=cut, y=price,fill=color))
+```
+
+###List of geom_xxx functions.
+
+```{r}
+ls(pattern = '^geom_', env = as.environment('package:ggplot2'))
+```
+
+
+
+#4. Scale
+
+Transform y axis by log scale
+```{r}
+ggplot(small)+geom_point(aes(x=carat, y=price, shape=cut, colour=color))+scale_y_log10()+scale_colour_manual(values=rainbow(7))
+```
+
+#5. Statistics
+
+```{r}
+ggplot(small, aes(x=carat, y=price))+geom_point()+scale_y_log10()+stat_smooth(method=lm)
+```
+
+#6. Coordinate
+
+Flip x and y axis
+```{r}
+ggplot(small)+geom_bar(aes(x=cut, fill=cut))+coord_flip()
+
+```
+
+Change coordinate to polor
+```{r}
+ggplot(small)+geom_bar(aes(x=factor(1), fill=cut))+coord_polar(theta="y")
+```
+
+
+#7. Layer
+
+```{r}
+p=ggplot(data = small, mapping = aes(x = carat, y = price))
+p2=p+geom_point()
+p2
+smoother <- geom_smooth(color = "red", alpha = 0.5, method = "loess", se = F)
+p3=p + geom_point() + smoother
+p3
+```
+
+#8. Facet
+```{r}
+ggplot(small, aes(x=carat, y=price))+
+  geom_point(aes(colour=cut))+
+  scale_y_log10() +
+  facet_wrap(~cut)+
+  stat_smooth(method='loess')
+```
+
+#9. Theme
+
+```{r}
+p=ggplot(data = small, mapping = aes(x = carat, y = price))+ geom_point()
+p
+p+theme_bw()
+p+theme_linedraw()
+p+theme_void()
+```
+
+

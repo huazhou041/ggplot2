@@ -1,1 +1,10 @@
 
+name: "ggplot2"
+output_dir: "."
+navbar:
+  title: "ggplot2"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "About"
+      href: about.html
